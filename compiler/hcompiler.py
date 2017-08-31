@@ -1,4 +1,4 @@
-import re
+import re,sys
 
 # **************************************************************************************************************
 #
@@ -139,8 +139,53 @@ class Bar:
 			render = render + note.render()
 		return render
 
-dchm = DiatonicHarmonica()
-dchm.show()
-bar = Bar(" -4o   -4  5\\  6\\ ",dchm)
-print(bar.checkLength(4))
-print(bar.render())
+# **************************************************************************************************************
+#
+#												Compiler Class
+#
+# **************************************************************************************************************
+
+class Compiler:
+
+	def version(self):
+		return 0.1
+
+	def compile(self,inStream,outStream,instrument):
+		self.instrument = instrument
+		self.outStream = outStream
+		self.source = inStream.readlines()
+		self.preProcess()
+		self.barList = []
+		for musicLine in [x for x in self.source if x.find(":=") < 0 and x.strip() != ""]:
+			for barDef in musicLine.split("|"):
+				bar = Bar(barDef,self.instrument)
+				self.barList.append(bar)
+				beats = int(self.assignments["beats"])
+				assert bar.checkLength(beats),"Bar is too long ["+barDef+"]"
+		self.header()
+		self.body()
+
+	def preProcess(self):
+		self.source = [x if x.find("#") < 0 else x[:x.find("#")] for x in self.source]
+		self.source = [x.strip() for x in self.source]
+		self.assignments = { "beats":"4","speed":"80","title":"<>","composer":"<>","key":"","harp":"diatonic"}
+		self.assignments["key"] = self.instrument.getKey().lower()
+		for assign in [x for x in self.source if x.find(":=") > 0]:
+			assign = [x.strip().lower() for x in assign.split(":=")]
+			assert assign[0] in self.assignments,"Unknown assignment ["+assign[0]+"]"
+			self.assignments[assign[0]] = assign[1]
+
+	def header(self):
+		self.outStream.write("#\n# compiled by v{0}\n#\n".format(self.version()))
+		for k in self.assignments.keys():
+			self.outStream.write("{0}:={1}\n".format(k,self.assignments[k]))
+
+	def body(self):
+		self.outStream.write("#\n# bar data\n#\n")
+		for bar in self.barList:
+			self.outStream.write(bar.render()+"\n")
+
+if __name__ == '__main__':
+	dchm = DiatonicHarmonica()
+	cmpl = Compiler()
+	cmpl.compile(open("love_me_do.harp"),open("love_me_do.htune","w"),dchm)

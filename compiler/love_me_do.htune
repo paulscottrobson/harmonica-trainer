@@ -1,0 +1,22 @@
+#
+# compiled by v0.1
+#
+beats:=4
+speed:=80
+title:=love me do
+composer:=the beatles
+key:=c
+harp:=diatonic
+#
+# bar data
+#
+50h50d52b55b
+99d99d99d48d
+50h50d52b55b
+99d99d99d48d
+50h50d52b55b
+99d99d99d53d
+55h53d52d
+55p
+99d99d43d43d
+53b52b50l
