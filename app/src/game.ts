@@ -2,6 +2,7 @@
 
 class MainState extends Phaser.State {
 
+    private tune:ITune;
 
     create() : void {
         // Stretched background
@@ -10,6 +11,7 @@ class MainState extends Phaser.State {
 
         var music:any = this.game.cache.getJSON("music")
         console.log(music);
+        this.tune = new Tune(music);
     }
 
     destroy() : void {

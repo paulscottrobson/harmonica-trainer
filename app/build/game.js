@@ -19,6 +19,7 @@ var MainState = (function (_super) {
         bgr.height = this.game.height;
         var music = this.game.cache.getJSON("music");
         console.log(music);
+        this.tune = new Tune(music);
     };
     MainState.prototype.destroy = function () {
     };
@@ -26,6 +27,127 @@ var MainState = (function (_super) {
     };
     return MainState;
 }(Phaser.State));
+var Breath;
+(function (Breath) {
+    Breath[Breath["BLOW"] = 0] = "BLOW";
+    Breath[Breath["DRAW"] = 1] = "DRAW";
+})(Breath || (Breath = {}));
+;
+var Bar = (function () {
+    function Bar(barDef, beats) {
+        var currentTime = 0;
+        this.beats = beats;
+        this.events = [];
+        this.startTime = [];
+        this.evCount = 0;
+        for (var _i = 0, _a = barDef.split(";"); _i < _a.length; _i++) {
+            var eventDef = _a[_i];
+            var event = new HarpEvent(eventDef);
+            this.events.push(event);
+            this.startTime.push(currentTime);
+            currentTime = currentTime + event.getLength();
+        }
+    }
+    Bar.prototype.destroy = function () {
+        this.events = this.startTime = null;
+    };
+    Bar.prototype.getBeats = function () {
+        return this.beats;
+    };
+    Bar.prototype.getEventCount = function () {
+        return this.evCount;
+    };
+    Bar.prototype.getEvent = function (n) {
+        return this.events[n];
+    };
+    Bar.prototype.getStartTime = function (n) {
+        return this.startTime[n];
+    };
+    Bar.prototype.getEndTime = function (n) {
+        return this.startTime[n] + this.events[n].getLength();
+    };
+    return Bar;
+}());
+var HarpEvent = (function () {
+    function HarpEvent(evDef) {
+        if (HarpEvent.regExp == null) {
+            HarpEvent.regExp = new RegExp("^([\>\<])([0-9]*)([\+\-]*)([a-z])$");
+        }
+        if (!HarpEvent.regExp.test(evDef)) {
+            throw new Error("Bad internal format '" + evDef + "'");
+        }
+        var match = HarpEvent.regExp.exec(evDef);
+        this.type = (match[1] == '>') ? Breath.BLOW : Breath.DRAW;
+        this.holes = [];
+        for (var _i = 0, _a = match[2]; _i < _a.length; _i++) {
+            var hole = _a[_i];
+            this.holes.push(parseInt(hole, 10) + 1);
+        }
+        this.noteCount = this.holes.length;
+        this.bends = 0;
+        for (var _b = 0, _c = match[3]; _b < _c.length; _b++) {
+            var bend = _c[_b];
+            if (bend == '+')
+                this.bends++;
+            if (bend == '-')
+                this.bends--;
+        }
+        this.mbLength = (match[4].charCodeAt(0) - 96) * 250;
+    }
+    HarpEvent.prototype.getType = function () {
+        return this.type;
+    };
+    HarpEvent.prototype.isRest = function () {
+        return (this.noteCount == 0);
+    };
+    HarpEvent.prototype.getHoles = function () {
+        return this.holes;
+    };
+    HarpEvent.prototype.getLength = function () {
+        return this.mbLength;
+    };
+    HarpEvent.prototype.getBends = function () {
+        return this.bends;
+    };
+    HarpEvent.regExp = null;
+    return HarpEvent;
+}());
+var Tune = (function () {
+    function Tune(json) {
+        this.bars = [];
+        this.barCount = 0;
+        this.musicJSON = json;
+        this.beats = parseInt(json["beats"]);
+        this.tempo = parseInt(json["speed"]);
+        for (var _i = 0, _a = json["bars"]; _i < _a.length; _i++) {
+            var barDef = _a[_i];
+            this.bars.push(new Bar(barDef, this.beats));
+        }
+        this.barCount = this.bars.length;
+    }
+    Tune.prototype.destroy = function () {
+        this.bars = this.musicJSON = null;
+    };
+    Tune.prototype.getBarCount = function () {
+        return this.barCount;
+    };
+    Tune.prototype.getBar = function (n) {
+        return this.bars[n];
+    };
+    Tune.prototype.getBeats = function () {
+        return this.beats;
+    };
+    Tune.prototype.getDefaultTempo = function () {
+        return this.tempo;
+    };
+    Tune.prototype.getInformation = function (key) {
+        return this.musicJSON(key.toLowerCase());
+    };
+    Tune.prototype.getHoleCount = function () {
+        return 10;
+    };
+    return Tune;
+}());
 window.onload = function () {
     var game = new HarmonicaTabApplication();
 };
