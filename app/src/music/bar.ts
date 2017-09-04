@@ -27,6 +27,7 @@ class Bar implements IBar {
             this.startTime.push(currentTime);
             currentTime = currentTime + event.getLength();
         }
+        this.evCount = this.events.length;
     }
 
     destroy(): void {

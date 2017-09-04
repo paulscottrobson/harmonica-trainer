@@ -23,4 +23,11 @@ interface IHarmonica extends Phaser.Group {
      * @memberof IHarmonica
      */
     getYHole():number;
+    /**
+     * Get the hole width in pixels
+     * 
+     * @returns {number} 
+     * @memberof IHarmonica
+     */
+    getHoleWidth():number;
 }

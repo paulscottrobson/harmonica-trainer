@@ -9,6 +9,7 @@
 class Harmonica extends Phaser.Group implements IHarmonica {
 
     private holeWidth:number;
+    private holeHeight:number;
     private holeCount:number;
 
     /**
@@ -22,7 +23,7 @@ class Harmonica extends Phaser.Group implements IHarmonica {
      */
     constructor(game:Phaser.Game,count:number,hWidth:number,hHeight:number) {
         super(game);
-        this.holeWidth = hWidth;this.holeCount = count;
+        this.holeWidth = hWidth;this.holeCount = count;this.holeHeight = hHeight;
         // Create the hole graphics
         for (var n:number = 0;n < count;n++) {
             var img:Phaser.Image = this.game.add.image((n-count/2)*hWidth,-hHeight/2,
@@ -53,12 +54,14 @@ class Harmonica extends Phaser.Group implements IHarmonica {
     }
 
     getYHole():number {
-        return this.y;
+        return this.y - this.holeHeight/2;
     }
 
     getHoleWidth():number {
-        return Math.floor(this.holeWidth * 90 / 100);
+        return Math.floor(this.holeWidth * 80 / 100);
     }
+
     destroy() {
+        super.destroy();
     }
 }

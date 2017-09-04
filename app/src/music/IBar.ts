@@ -44,4 +44,11 @@ interface IBar {
      * @memberof IBar
      */
     getEndTime(n:number):number;
+    /**
+     * Get the current bar number (indexed from zero)
+     * 
+     * @returns {number} 
+     * @memberof IBar
+     */
+    getBarNumber():number;
 }

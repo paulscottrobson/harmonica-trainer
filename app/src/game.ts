@@ -12,8 +12,16 @@ class MainState extends Phaser.State {
         // Load music from JSON
         var music:any = this.game.cache.getJSON("music")
         this.tune = new Tune(music);
+        // Create the harmonica graphic.
         this.createHarmonica();
 
+        var br:IBarRenderer;
+        br = new BarRenderer(this.game,this.guiHarmonica,this.tune.getBar(2));
+        br.move(20,200);
+        br = new BarRenderer(this.game,this.guiHarmonica,this.tune.getBar(1));
+        br.move(220,200);
+        br = new BarRenderer(this.game,this.guiHarmonica,this.tune.getBar(0));
+        br.move(420,200);
     }
 
     destroy() : void {
@@ -39,8 +47,8 @@ class MainState extends Phaser.State {
             for (var n:number = 1;n <= hSize;n++) {
                 var img:Phaser.Image = this.game.add.image(0,0,"sprites","rectangle");
                 img.x = this.guiHarmonica.getXHole(n);img.y = this.guiHarmonica.getYHole();
-                img.anchor.x = 0.5;img.width = 4;img.height = 200;img.tint = 0x800000;
-                img.angle = -225;
+                img.anchor.x = 0.5;img.width = 4;img.height = 150;img.tint = 0x800000;
+                img.angle = -25;
             }
         }    
     }

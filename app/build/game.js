@@ -20,6 +20,13 @@ var MainState = (function (_super) {
         var music = this.game.cache.getJSON("music");
         this.tune = new Tune(music);
         this.createHarmonica();
+        var br;
+        br = new BarRenderer(this.game, this.guiHarmonica, this.tune.getBar(2));
+        br.move(20, 200);
+        br = new BarRenderer(this.game, this.guiHarmonica, this.tune.getBar(1));
+        br.move(220, 200);
+        br = new BarRenderer(this.game, this.guiHarmonica, this.tune.getBar(0));
+        br.move(420, 200);
     };
     MainState.prototype.destroy = function () {
         this.tune = null;
@@ -40,9 +47,9 @@ var MainState = (function (_super) {
                 img.y = this.guiHarmonica.getYHole();
                 img.anchor.x = 0.5;
                 img.width = 4;
-                img.height = 200;
+                img.height = 150;
                 img.tint = 0x800000;
-                img.angle = -225;
+                img.angle = -25;
             }
         }
     };
@@ -54,6 +61,7 @@ var Harmonica = (function (_super) {
         var _this = _super.call(this, game) || this;
         _this.holeWidth = hWidth;
         _this.holeCount = count;
+        _this.holeHeight = hHeight;
         for (var n = 0; n < count; n++) {
             var img = _this.game.add.image((n - count / 2) * hWidth, -hHeight / 2, "sprites", "hole", _this);
             img.width = hWidth;
@@ -89,12 +97,13 @@ var Harmonica = (function (_super) {
             this.holeWidth * (hole - 1) + this.holeWidth / 2;
     };
     Harmonica.prototype.getYHole = function () {
-        return this.y;
+        return this.y - this.holeHeight / 2;
     };
     Harmonica.prototype.getHoleWidth = function () {
-        return Math.floor(this.holeWidth * 90 / 100);
+        return Math.floor(this.holeWidth * 80 / 100);
     };
     Harmonica.prototype.destroy = function () {
+        _super.prototype.destroy.call(this);
     };
     return Harmonica;
 }(Phaser.Group));
@@ -119,6 +128,7 @@ var Bar = (function () {
             this.startTime.push(currentTime);
             currentTime = currentTime + event.getLength();
         }
+        this.evCount = this.events.length;
     }
     Bar.prototype.destroy = function () {
         this.events = this.startTime = null;
@@ -292,3 +302,90 @@ var PreloadState = (function (_super) {
     PreloadState.NOTE_COUNT = 37;
     return PreloadState;
 }(Phaser.State));
+var BarRenderer = (function (_super) {
+    __extends(BarRenderer, _super);
+    function BarRenderer(game, harmonica, bar) {
+        var _this = _super.call(this, game) || this;
+        _this.bar = bar;
+        _this.isDrawn = false;
+        _this.harmonica = harmonica;
+        _this.evtImages = null;
+        return _this;
+    }
+    BarRenderer.prototype.destroy = function () {
+        this.erase();
+        _super.prototype.destroy.call(this);
+    };
+    BarRenderer.prototype.move = function (y, height) {
+        if (y + height < 0 || y > this.game.height) {
+            this.erase();
+            return;
+        }
+        if (!this.isDrawn) {
+            this.draw(height);
+        }
+        var imgID = 0;
+        for (var n = 0; n < this.bar.getEventCount(); n++) {
+            var evt = this.bar.getEvent(n);
+            var yPos = y + height - height * this.bar.getStartTime(n) / (1000 * this.bar.getBeats());
+            var holesUsed = evt.getHoles();
+            for (var _i = 0, holesUsed_1 = holesUsed; _i < holesUsed_1.length; _i++) {
+                var hole = holesUsed_1[_i];
+                this.evtImages[imgID].y = yPos;
+                imgID++;
+            }
+        }
+        this.game.world.bringToTop(this.harmonica);
+    };
+    BarRenderer.prototype.draw = function (height) {
+        if (!this.isDrawn) {
+            this.isDrawn = true;
+            console.log("About to draw", this.bar.getEventCount());
+            this.evtImages = [];
+            for (var n = 0; n < this.bar.getEventCount(); n++) {
+                var evt = this.bar.getEvent(n);
+                var holesUsed = evt.getHoles();
+                for (var _i = 0, holesUsed_2 = holesUsed; _i < holesUsed_2.length; _i++) {
+                    var hole = holesUsed_2[_i];
+                    var img = this.game.add.image(0, 0, "sprites", "rectangle", this);
+                    img.width = this.harmonica.getHoleWidth();
+                    img.height = height * evt.getLength() / (1000 * this.bar.getBeats()) - 8;
+                    img.anchor.x = 0.5;
+                    img.anchor.y = 1;
+                    img.x = this.harmonica.getXHole(hole);
+                    this.evtImages.push(img);
+                    if (evt.getType() == Breath.DRAW) {
+                        img.tint = BarRenderer.DRAW_COLOURS[Math.abs(evt.getBends())];
+                    }
+                    else {
+                        img.tint = BarRenderer.BLOW_COLOURS[Math.abs(evt.getBends())];
+                    }
+                }
+            }
+        }
+    };
+    BarRenderer.prototype.erase = function () {
+        if (this.isDrawn) {
+            this.isDrawn = false;
+            for (var _i = 0, _a = this.evtImages; _i < _a.length; _i++) {
+                var img = _a[_i];
+                img.destroy();
+            }
+            this.evtImages = null;
+            this.bar = null;
+        }
+    };
+    BarRenderer.DRAW_COLOURS = [
+        0x00FFFF,
+        0x0080FF,
+        0x0000FF,
+        0x7F00FF,
+    ];
+    BarRenderer.BLOW_COLOURS = [
+        0xFF0000,
+        0xFF8000,
+        0x663300,
+        0x660000
+    ];
+    return BarRenderer;
+}(Phaser.Group));
