@@ -67,8 +67,9 @@ class BarRenderer extends Phaser.Group implements IBarRenderer {
             for (var n:number = 0; n < this.bar.getEventCount();n++) {
                 var evt:IHarpEvent = this.bar.getEvent(n);
                 var holesUsed:number[] = evt.getHoles();
+                var graphic:string = (evt.getType() == Breath.BLOW) ? "blowfrectangle" : "drawfrectangle";
                 for (var hole of holesUsed) {
-                    var img:Phaser.Image = this.game.add.image(0,0,"sprites","frectangle",this);
+                    var img:Phaser.Image = this.game.add.image(0,0,"sprites",graphic,this);
                     img.width = this.harmonica.getHoleWidth();
                     img.height = Math.max(1,height * evt.getLength() / (4 * this.bar.getBeats())-8);
                     img.anchor.x = 0.5;img.anchor.y = 1;

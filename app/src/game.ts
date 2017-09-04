@@ -32,7 +32,7 @@ class MainState extends Phaser.State {
     }
 
     update() : void {
-        this.y = this.y + 0.005;
+        this.y = this.y + 0.01;
         this.renderManager.moveTo(this.y);
         this.musicPlayer.update(this.y);
     }

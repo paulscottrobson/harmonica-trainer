@@ -137,5 +137,5 @@ class Compiler:
 
 if __name__ == '__main__':
 	cmpl = Compiler()
-	cmpl.compile(open("love_me_do.harp"),open("../app/music.json","w"))
-	cmpl.compile(open("love_me_do.harp"),sys.stdout)
+	cmpl.compile(open("ode_to_joy.harp"),open("../app/music.json","w"))
+	cmpl.compile(open("ode_to_joy.harp"),sys.stdout)

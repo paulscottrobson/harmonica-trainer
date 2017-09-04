@@ -28,7 +28,11 @@ class Harmonica extends Phaser.Group implements IHarmonica {
         for (var n:number = 0;n < count;n++) {
             var img:Phaser.Image = this.game.add.image((n-count/2)*hWidth,-hHeight/2,
                                                        "sprites","hole",this);
-            img.width = hWidth;img.height = hHeight;                                                    
+            img.width = hWidth;img.height = hHeight;  
+            var txt:Phaser.BitmapText = this.game.add.bitmapText(img.x+hWidth/2,-hHeight*2/3,
+                                                                 "font",(n+1).toString(),
+                                                                 hWidth*2/3,this);
+            txt.anchor.x = 0.5;txt.anchor.y = 1;txt.tint = 0x004000;                                      
         }
         // Draw the frame
         var colour:number = 0x0040FF;

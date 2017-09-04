@@ -85,8 +85,25 @@ class HarmonicaPlayer {
      * @memberof HarmonicaPlayer
      */
     private playNotes(event:IHarpEvent): void {
-        console.log(event.getHoles())
+        for (var n of event.getHoles()) {
+            var soundID:number = 0;
+            if (event.getType() == Breath.BLOW) {
+                soundID = HarmonicaPlayer.BLOW_NOTES[n];
+                //console.log("Blow",n,soundID);
+            } else {
+                soundID = HarmonicaPlayer.DRAW_NOTES[n];
+                //console.log("Draw",n,soundID);
+            }
+            soundID = soundID + event.getBends();
+            this.sounds[soundID].play();
+        }
     }
+
+    /**
+     * These are the notes played on blow or draw
+     */
+    private static BLOW_NOTES:number[] = [ 0, 1, 5, 8,13,17,20,25,29,32,37 ];
+    private static DRAW_NOTES:number[] = [ 0, 3, 8,12,15,18,22,24,27,31,34 ];
 
     /**
      * Stop all sounds playing.
@@ -101,4 +118,6 @@ class HarmonicaPlayer {
             }
         }
     }
+
+    
 }

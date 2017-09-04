@@ -33,7 +33,7 @@ var MainState = (function (_super) {
         this.musicPlayer = this.renderManager = null;
     };
     MainState.prototype.update = function () {
-        this.y = this.y + 0.005;
+        this.y = this.y + 0.01;
         this.renderManager.moveTo(this.y);
         this.musicPlayer.update(this.y);
     };
@@ -57,6 +57,10 @@ var Harmonica = (function (_super) {
             var img = _this.game.add.image((n - count / 2) * hWidth, -hHeight / 2, "sprites", "hole", _this);
             img.width = hWidth;
             img.height = hHeight;
+            var txt = _this.game.add.bitmapText(img.x + hWidth / 2, -hHeight * 2 / 3, "font", (n + 1).toString(), hWidth * 2 / 3, _this);
+            txt.anchor.x = 0.5;
+            txt.anchor.y = 1;
+            txt.tint = 0x004000;
         }
         var colour = 0x0040FF;
         for (var s = -1; s <= 1; s += 2) {
@@ -269,7 +273,18 @@ var HarmonicaPlayer = (function () {
         }
     };
     HarmonicaPlayer.prototype.playNotes = function (event) {
-        console.log(event.getHoles());
+        for (var _i = 0, _a = event.getHoles(); _i < _a.length; _i++) {
+            var n = _a[_i];
+            var soundID = 0;
+            if (event.getType() == Breath.BLOW) {
+                soundID = HarmonicaPlayer.BLOW_NOTES[n];
+            }
+            else {
+                soundID = HarmonicaPlayer.DRAW_NOTES[n];
+            }
+            soundID = soundID + event.getBends();
+            this.sounds[soundID].play();
+        }
     };
     HarmonicaPlayer.prototype.stopAllSounds = function () {
         for (var ns = 1; ns <= PreloadState.NOTE_COUNT; ns++) {
@@ -278,6 +293,8 @@ var HarmonicaPlayer = (function () {
             }
         }
     };
+    HarmonicaPlayer.BLOW_NOTES = [0, 1, 5, 8, 13, 17, 20, 25, 29, 32, 37];
+    HarmonicaPlayer.DRAW_NOTES = [0, 3, 8, 12, 15, 18, 22, 24, 27, 31, 34];
     return HarmonicaPlayer;
 }());
 window.onload = function () {
@@ -391,9 +408,10 @@ var BarRenderer = (function (_super) {
             for (var n = 0; n < this.bar.getEventCount(); n++) {
                 var evt = this.bar.getEvent(n);
                 var holesUsed = evt.getHoles();
+                var graphic = (evt.getType() == Breath.BLOW) ? "blowfrectangle" : "drawfrectangle";
                 for (var _i = 0, holesUsed_2 = holesUsed; _i < holesUsed_2.length; _i++) {
                     var hole = holesUsed_2[_i];
-                    var img = this.game.add.image(0, 0, "sprites", "frectangle", this);
+                    var img = this.game.add.image(0, 0, "sprites", graphic, this);
                     img.width = this.harmonica.getHoleWidth();
                     img.height = Math.max(1, height * evt.getLength() / (4 * this.bar.getBeats()) - 8);
                     img.anchor.x = 0.5;
