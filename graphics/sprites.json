@@ -8,18 +8,25 @@
             "sourceSize":{ "w":252,"h":192 }
         },
         "rectangle": {
-            "frame":{ "x":336,"y":0,"w":76,"h":51 },
+            "frame":{ "x":364,"y":80,"w":76,"h":51 },
             "rotated":false,
             "trimmed":false,
             "spriteSourceSize":{ "x":0,"y":0,"w":76,"h":51 },
             "sourceSize":{ "w":76,"h":51 }
         },
         "frame": {
-            "frame":{ "x":256,"y":0,"w":79,"h":79 },
+            "frame":{ "x":364,"y":0,"w":79,"h":79 },
             "rotated":false,
             "trimmed":false,
             "spriteSourceSize":{ "x":0,"y":0,"w":79,"h":79 },
             "sourceSize":{ "w":79,"h":79 }
+        },
+        "hole": {
+            "frame":{ "x":256,"y":0,"w":105,"h":114 },
+            "rotated":false,
+            "trimmed":false,
+            "spriteSourceSize":{ "x":0,"y":0,"w":105,"h":114 },
+            "sourceSize":{ "w":105,"h":114 }
         }
     },
     "meta":{

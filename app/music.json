@@ -1,25 +1,21 @@
 {
-    "author":"Traditional",
-    "beats":4,
-    "name":"Camptown Races",
-    "speed":100,
-    "bars":[
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                ""
-           ]
+    "beats":"4",
+    "speed":"100",
+    "title":"love me do",
+    "composer":"the beatles",
+    "key":"c",
+    "harmonica":"diatonic",
+    "compiler":"0.1",
+    "bars": [
+              "<3h;<3d;>4b;>5b",
+              ">d;>d;>d;>3d",
+              "<3h;<3d;>4b;>5b",
+              ">d;>d;>d;>3d",
+              "<3h;<3d;>4b;>5b",
+              ">d;>d;>d;<4d",
+              ">5h;<4d;>4d",
+              ">5p",
+              ">d;>d;>2d;>2d",
+              "<4b;>4b;<3l"
+            ]
 }

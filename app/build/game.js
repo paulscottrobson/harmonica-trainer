@@ -17,6 +17,8 @@ var MainState = (function (_super) {
         var bgr = this.game.add.image(0, 0, "sprites", "background");
         bgr.width = this.game.width;
         bgr.height = this.game.height;
+        var music = this.game.cache.getJSON("music");
+        console.log(music);
     };
     MainState.prototype.destroy = function () {
     };

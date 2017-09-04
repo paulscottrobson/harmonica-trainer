@@ -14,7 +14,7 @@
    viewBox="0 0 210 297"
    version="1.1"
    id="svg8"
-   inkscape:version="0.92.1 r"
+   inkscape:version="0.92.2 5c3e80d, 2017-08-06"
    sodipodi:docname="source.svg">
   <defs
      id="defs2" />
@@ -25,14 +25,14 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.81390875"
-     inkscape:cx="218.08342"
-     inkscape:cy="612.48292"
+     inkscape:zoom="1.4142136"
+     inkscape:cx="289.06548"
+     inkscape:cy="886.70072"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:window-width="1920"
-     inkscape:window-height="1019"
+     inkscape:window-height="1029"
      inkscape:window-x="0"
      inkscape:window-y="27"
      inkscape:window-maximized="1">
@@ -181,7 +181,7 @@
              height="130"
              width="220"
              id="rect4673" /></flowRegion><flowPara
-           id="flowPara4675"></flowPara></flowRoot>    </g>
+           id="flowPara4675" /></flowRoot>    </g>
     <g
        id="g4695">
       <flowRoot
@@ -194,7 +194,7 @@
              height="150"
              width="220"
              id="rect4687" /></flowRegion><flowPara
-           id="flowPara4689"></flowPara></flowRoot>    </g>
+           id="flowPara4689" /></flowRoot>    </g>
     <g
        id="g4709">
       <flowRoot
@@ -207,7 +207,7 @@
              height="130"
              width="220"
              id="rect4701" /></flowRegion><flowPara
-           id="flowPara4703"></flowPara></flowRoot>    </g>
+           id="flowPara4703" /></flowRoot>    </g>
     <g
        id="g4723">
       <flowRoot
@@ -220,6 +220,36 @@
              height="110"
              width="210"
              id="rect4715" /></flowRegion><flowPara
-           id="flowPara4717"></flowPara></flowRoot>    </g>
+           id="flowPara4717" /></flowRoot>    </g>
+    <g
+       id="g3877"
+       inkscape:export-filename="/home/paulr/Projects/harmonica-trainer/graphics/source/hole.png"
+       inkscape:export-xdpi="40.039188"
+       inkscape:export-ydpi="40.039188">
+      <rect
+         style="fill:none;stroke:#000000;stroke-width:6;stroke-opacity:1"
+         y="19.187504"
+         x="134.59151"
+         height="60.85416"
+         width="60.854149"
+         id="rect3736" />
+      <rect
+         style="fill:none;stroke:#4d4d4d;stroke-width:1.81726825;stroke-opacity:1"
+         y="21.566818"
+         x="136.97083"
+         height="56.095531"
+         width="56.095512"
+         id="rect3736-3" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path3808"
+         d="m 131.5915,14.857869 h 66.846"
+         style="fill:#999999;stroke:#999999;stroke-width:2.90198946;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path3808-5"
+         d="m 131.5915,84.274999 h 66.846"
+         style="fill:#999999;stroke:#999999;stroke-width:2.90198946;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    </g>
   </g>
 </svg>
