@@ -8,14 +8,16 @@
  */
 class Bar implements IBar {
 
+    private barNumber:number;
     private beats:number;
     private evCount:number;
     private events:IHarpEvent[];
     private startTime:number[];
 
-    constructor(barDef:string,beats:number) {
-        var currentTime:number = 0;
+    constructor(barDef:string,barNumber:number,beats:number) {
 
+        var currentTime:number = 0;
+        this.barNumber = barNumber;
         this.beats = beats;
         this.events = [];this.startTime = [];this.evCount = 0;
 
@@ -46,5 +48,7 @@ class Bar implements IBar {
     getEndTime(n: number): number {
         return this.startTime[n] + this.events[n].getLength();
     }
-
+    getBarNumber():number {
+        return this.barNumber;
+    }
 }

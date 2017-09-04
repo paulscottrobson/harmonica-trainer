@@ -18,15 +18,86 @@ var MainState = (function (_super) {
         bgr.width = this.game.width;
         bgr.height = this.game.height;
         var music = this.game.cache.getJSON("music");
-        console.log(music);
         this.tune = new Tune(music);
+        this.createHarmonica();
     };
     MainState.prototype.destroy = function () {
+        this.tune = null;
+        this.guiHarmonica = null;
     };
     MainState.prototype.update = function () {
     };
+    MainState.prototype.createHarmonica = function () {
+        var hSize = this.tune.getHoleCount();
+        var holeSize = Math.floor(this.game.width * 3 / 4 / (hSize + 1));
+        this.guiHarmonica = new Harmonica(this.game, hSize, holeSize, holeSize);
+        this.guiHarmonica.x = this.game.width / 2;
+        this.guiHarmonica.y = this.game.height * 4 / 5;
+        if (true) {
+            for (var n = 1; n <= hSize; n++) {
+                var img = this.game.add.image(0, 0, "sprites", "rectangle");
+                img.x = this.guiHarmonica.getXHole(n);
+                img.y = this.guiHarmonica.getYHole();
+                img.anchor.x = 0.5;
+                img.width = 4;
+                img.height = 200;
+                img.tint = 0x800000;
+                img.angle = -225;
+            }
+        }
+    };
     return MainState;
 }(Phaser.State));
+var Harmonica = (function (_super) {
+    __extends(Harmonica, _super);
+    function Harmonica(game, count, hWidth, hHeight) {
+        var _this = _super.call(this, game) || this;
+        _this.holeWidth = hWidth;
+        _this.holeCount = count;
+        for (var n = 0; n < count; n++) {
+            var img = _this.game.add.image((n - count / 2) * hWidth, -hHeight / 2, "sprites", "hole", _this);
+            img.width = hWidth;
+            img.height = hHeight;
+        }
+        var colour = 0x0040FF;
+        for (var s = -1; s <= 1; s += 2) {
+            var img;
+            img = _this.game.add.image(0, s * hHeight / 2, "sprites", "rectangle", _this);
+            img.width = count * hWidth;
+            img.height = hHeight / 4;
+            img.anchor.x = 0.5;
+            img.anchor.y = 1 - (s + 1) / 2;
+            img.tint = colour;
+            img = _this.game.add.image(s * count / 2 * hWidth, 0, "sprites", "rectangle", _this);
+            img.anchor.x = 1 - (s + 1) / 2;
+            img.anchor.y = 0.5;
+            img.height = hHeight * 3 / 2;
+            img.width = hWidth / 4;
+            img.tint = colour;
+            img = _this.game.add.image(s * count / 2 * hWidth, 0, "sprites", "rectangle", _this);
+            img.anchor.x = 1 - (s + 1) / 2;
+            img.anchor.y = 0.5;
+            img.height = hHeight * 2 / 3;
+            img.width = hWidth;
+            img.tint = colour;
+        }
+        _this.cacheAsBitmap = true;
+        return _this;
+    }
+    Harmonica.prototype.getXHole = function (hole) {
+        return this.x - this.holeCount * this.holeWidth / 2 +
+            this.holeWidth * (hole - 1) + this.holeWidth / 2;
+    };
+    Harmonica.prototype.getYHole = function () {
+        return this.y;
+    };
+    Harmonica.prototype.getHoleWidth = function () {
+        return Math.floor(this.holeWidth * 90 / 100);
+    };
+    Harmonica.prototype.destroy = function () {
+    };
+    return Harmonica;
+}(Phaser.Group));
 var Breath;
 (function (Breath) {
     Breath[Breath["BLOW"] = 0] = "BLOW";
@@ -34,8 +105,9 @@ var Breath;
 })(Breath || (Breath = {}));
 ;
 var Bar = (function () {
-    function Bar(barDef, beats) {
+    function Bar(barDef, barNumber, beats) {
         var currentTime = 0;
+        this.barNumber = barNumber;
         this.beats = beats;
         this.events = [];
         this.startTime = [];
@@ -65,6 +137,9 @@ var Bar = (function () {
     };
     Bar.prototype.getEndTime = function (n) {
         return this.startTime[n] + this.events[n].getLength();
+    };
+    Bar.prototype.getBarNumber = function () {
+        return this.barNumber;
     };
     return Bar;
 }());
@@ -121,9 +196,9 @@ var Tune = (function () {
         this.tempo = parseInt(json["speed"]);
         for (var _i = 0, _a = json["bars"]; _i < _a.length; _i++) {
             var barDef = _a[_i];
-            this.bars.push(new Bar(barDef, this.beats));
+            this.bars.push(new Bar(barDef, this.barCount, this.beats));
+            this.barCount++;
         }
-        this.barCount = this.bars.length;
     }
     Tune.prototype.destroy = function () {
         this.bars = this.musicJSON = null;

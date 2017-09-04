@@ -20,9 +20,9 @@ class Tune implements ITune {
         this.beats = parseInt(json["beats"]);
         this.tempo = parseInt(json["speed"]);
         for (var barDef of json["bars"]) {
-            this.bars.push(new Bar(barDef,this.beats));
+            this.bars.push(new Bar(barDef,this.barCount,this.beats));
+            this.barCount++;
         }
-        this.barCount = this.bars.length;
     }
 
     destroy() {
