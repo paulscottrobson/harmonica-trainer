@@ -62,8 +62,7 @@ class BarRenderer extends Phaser.Group implements IBarRenderer {
     private draw(height:number) : void {
         if (!this.isDrawn) {
             this.isDrawn = true;
-            // For each music event, create a rectangle and set it up horizontally.
-            console.log("About to draw",this.bar.getEventCount());
+            // For each music event, create a rectangle and set it up horizontally,size,colour            
             this.evtImages = [];
             for (var n:number = 0; n < this.bar.getEventCount();n++) {
                 var evt:IHarpEvent = this.bar.getEvent(n);
@@ -71,7 +70,7 @@ class BarRenderer extends Phaser.Group implements IBarRenderer {
                 for (var hole of holesUsed) {
                     var img:Phaser.Image = this.game.add.image(0,0,"sprites","rectangle",this);
                     img.width = this.harmonica.getHoleWidth();
-                    img.height = height * evt.getLength() / (1000 * this.bar.getBeats())-8;
+                    img.height = Math.max(1,height * evt.getLength() / (1000 * this.bar.getBeats())-8);
                     img.anchor.x = 0.5;img.anchor.y = 1;
                     img.x = this.harmonica.getXHole(hole);
                     this.evtImages.push(img);

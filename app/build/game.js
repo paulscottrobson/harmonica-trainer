@@ -20,19 +20,17 @@ var MainState = (function (_super) {
         var music = this.game.cache.getJSON("music");
         this.tune = new Tune(music);
         this.createHarmonica();
-        var br;
-        br = new BarRenderer(this.game, this.guiHarmonica, this.tune.getBar(2));
-        br.move(20, 200);
-        br = new BarRenderer(this.game, this.guiHarmonica, this.tune.getBar(1));
-        br.move(220, 200);
-        br = new BarRenderer(this.game, this.guiHarmonica, this.tune.getBar(0));
-        br.move(420, 200);
+        this.renderManager = new RenderManager(this.game, this.tune, this.guiHarmonica);
+        this.renderManager.moveTo(0);
+        this.y = 0;
     };
     MainState.prototype.destroy = function () {
         this.tune = null;
         this.guiHarmonica = null;
     };
     MainState.prototype.update = function () {
+        this.y = this.y + 0.005;
+        this.renderManager.moveTo(this.y);
     };
     MainState.prototype.createHarmonica = function () {
         var hSize = this.tune.getHoleCount();
@@ -40,18 +38,6 @@ var MainState = (function (_super) {
         this.guiHarmonica = new Harmonica(this.game, hSize, holeSize, holeSize);
         this.guiHarmonica.x = this.game.width / 2;
         this.guiHarmonica.y = this.game.height * 4 / 5;
-        if (true) {
-            for (var n = 1; n <= hSize; n++) {
-                var img = this.game.add.image(0, 0, "sprites", "rectangle");
-                img.x = this.guiHarmonica.getXHole(n);
-                img.y = this.guiHarmonica.getYHole();
-                img.anchor.x = 0.5;
-                img.width = 4;
-                img.height = 150;
-                img.tint = 0x800000;
-                img.angle = -25;
-            }
-        }
     };
     return MainState;
 }(Phaser.State));
@@ -340,7 +326,6 @@ var BarRenderer = (function (_super) {
     BarRenderer.prototype.draw = function (height) {
         if (!this.isDrawn) {
             this.isDrawn = true;
-            console.log("About to draw", this.bar.getEventCount());
             this.evtImages = [];
             for (var n = 0; n < this.bar.getEventCount(); n++) {
                 var evt = this.bar.getEvent(n);
@@ -349,7 +334,7 @@ var BarRenderer = (function (_super) {
                     var hole = holesUsed_2[_i];
                     var img = this.game.add.image(0, 0, "sprites", "rectangle", this);
                     img.width = this.harmonica.getHoleWidth();
-                    img.height = height * evt.getLength() / (1000 * this.bar.getBeats()) - 8;
+                    img.height = Math.max(1, height * evt.getLength() / (1000 * this.bar.getBeats()) - 8);
                     img.anchor.x = 0.5;
                     img.anchor.y = 1;
                     img.x = this.harmonica.getXHole(hole);
@@ -389,3 +374,36 @@ var BarRenderer = (function (_super) {
     ];
     return BarRenderer;
 }(Phaser.Group));
+var RenderManager = (function () {
+    function RenderManager(game, tune, harmonica) {
+        this.tune = tune;
+        this.harmonica = harmonica;
+        this.entryHeight = game.height / 3;
+        this.renderers = [];
+        this.lastYIntegerPos = [];
+        for (var n = 0; n < tune.getBarCount(); n++) {
+            var bar = tune.getBar(n);
+            var rnd = new BarRenderer(game, harmonica, bar);
+            this.renderers.push(rnd);
+            this.lastYIntegerPos.push(9999999);
+        }
+    }
+    RenderManager.prototype.destroy = function () {
+        for (var _i = 0, _a = this.renderers; _i < _a.length; _i++) {
+            var rnd = _a[_i];
+            rnd.destroy();
+        }
+        this.tune = this.harmonica = this.renderers = this.lastYIntegerPos = null;
+    };
+    RenderManager.prototype.moveTo = function (barPos) {
+        for (var n = 0; n < this.tune.getBarCount(); n++) {
+            var y = this.harmonica.getYHole() - n * this.entryHeight - this.entryHeight;
+            y = Math.round(y + this.entryHeight * barPos);
+            if (y != this.lastYIntegerPos[n]) {
+                this.renderers[n].move(y, this.entryHeight);
+                this.lastYIntegerPos[n] = y;
+            }
+        }
+    };
+    return RenderManager;
+}());

@@ -4,6 +4,8 @@ class MainState extends Phaser.State {
 
     private tune:ITune;
     private guiHarmonica:IHarmonica;
+    private renderManager:RenderManager;
+    private y:number;
 
     create() : void {
         // Stretched background
@@ -15,13 +17,9 @@ class MainState extends Phaser.State {
         // Create the harmonica graphic.
         this.createHarmonica();
 
-        var br:IBarRenderer;
-        br = new BarRenderer(this.game,this.guiHarmonica,this.tune.getBar(2));
-        br.move(20,200);
-        br = new BarRenderer(this.game,this.guiHarmonica,this.tune.getBar(1));
-        br.move(220,200);
-        br = new BarRenderer(this.game,this.guiHarmonica,this.tune.getBar(0));
-        br.move(420,200);
+        this.renderManager = new RenderManager(this.game,this.tune,this.guiHarmonica);
+        this.renderManager.moveTo(0);
+        this.y = 0;
     }
 
     destroy() : void {
@@ -29,6 +27,8 @@ class MainState extends Phaser.State {
     }
 
     update() : void {
+        this.y = this.y + 0.005;
+        this.renderManager.moveTo(this.y);
     }
 
     /**
@@ -43,13 +43,13 @@ class MainState extends Phaser.State {
         this.guiHarmonica = new Harmonica(this.game,hSize,holeSize,holeSize);
         this.guiHarmonica.x = this.game.width/2;
         this.guiHarmonica.y = this.game.height*4/5;
-        if (true) {
+        /*
             for (var n:number = 1;n <= hSize;n++) {
                 var img:Phaser.Image = this.game.add.image(0,0,"sprites","rectangle");
                 img.x = this.guiHarmonica.getXHole(n);img.y = this.guiHarmonica.getYHole();
                 img.anchor.x = 0.5;img.width = 4;img.height = 150;img.tint = 0x800000;
                 img.angle = -25;
             }
-        }    
+        */   
     }
 }    
