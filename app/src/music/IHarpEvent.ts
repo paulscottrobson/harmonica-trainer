@@ -32,7 +32,7 @@ interface IHarpEvent {
      */
     getHoles():number[];
     /**
-     * Get length of note in Millibeats.
+     * Get length of note in quarterbeats.
      * 
      * @returns {number} 
      * @memberof IHarpEvent

@@ -5,6 +5,7 @@ class MainState extends Phaser.State {
     private tune:ITune;
     private guiHarmonica:IHarmonica;
     private renderManager:RenderManager;
+    private musicPlayer:HarmonicaPlayer;
     private y:number;
 
     create() : void {
@@ -20,15 +21,20 @@ class MainState extends Phaser.State {
         this.renderManager = new RenderManager(this.game,this.tune,this.guiHarmonica);
         this.renderManager.moveTo(0);
         this.y = 0;
+        this.musicPlayer = new HarmonicaPlayer(this.game,this.tune);
     }
 
     destroy() : void {
+        this.musicPlayer.destroy();
+        this.renderManager.destroy();
         this.tune = null;this.guiHarmonica = null;
+        this.musicPlayer = this.renderManager = null;
     }
 
     update() : void {
         this.y = this.y + 0.005;
         this.renderManager.moveTo(this.y);
+        this.musicPlayer.update(this.y);
     }
 
     /**

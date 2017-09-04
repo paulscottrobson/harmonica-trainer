@@ -43,7 +43,7 @@ class BarRenderer extends Phaser.Group implements IBarRenderer {
         var imgID:number = 0;
         for (var n:number = 0;n < this.bar.getEventCount();n++) {
             var evt:IHarpEvent = this.bar.getEvent(n);
-            var yPos:number = y + height - height * this.bar.getStartTime(n) / (1000 * this.bar.getBeats());
+            var yPos:number = y + height - height * this.bar.getStartTime(n) / (4 * this.bar.getBeats());
             var holesUsed:number[] = evt.getHoles();
             for (var hole of holesUsed) {
                 this.evtImages[imgID].y = yPos;
@@ -68,9 +68,9 @@ class BarRenderer extends Phaser.Group implements IBarRenderer {
                 var evt:IHarpEvent = this.bar.getEvent(n);
                 var holesUsed:number[] = evt.getHoles();
                 for (var hole of holesUsed) {
-                    var img:Phaser.Image = this.game.add.image(0,0,"sprites","rectangle",this);
+                    var img:Phaser.Image = this.game.add.image(0,0,"sprites","frectangle",this);
                     img.width = this.harmonica.getHoleWidth();
-                    img.height = Math.max(1,height * evt.getLength() / (1000 * this.bar.getBeats())-8);
+                    img.height = Math.max(1,height * evt.getLength() / (4 * this.bar.getBeats())-8);
                     img.anchor.x = 0.5;img.anchor.y = 1;
                     img.x = this.harmonica.getXHole(hole);
                     this.evtImages.push(img);

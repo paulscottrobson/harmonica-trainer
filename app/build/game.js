@@ -23,14 +23,19 @@ var MainState = (function (_super) {
         this.renderManager = new RenderManager(this.game, this.tune, this.guiHarmonica);
         this.renderManager.moveTo(0);
         this.y = 0;
+        this.musicPlayer = new HarmonicaPlayer(this.game, this.tune);
     };
     MainState.prototype.destroy = function () {
+        this.musicPlayer.destroy();
+        this.renderManager.destroy();
         this.tune = null;
         this.guiHarmonica = null;
+        this.musicPlayer = this.renderManager = null;
     };
     MainState.prototype.update = function () {
         this.y = this.y + 0.005;
         this.renderManager.moveTo(this.y);
+        this.musicPlayer.update(this.y);
     };
     MainState.prototype.createHarmonica = function () {
         var hSize = this.tune.getHoleCount();
@@ -163,7 +168,7 @@ var HarpEvent = (function () {
             if (bend == '-')
                 this.bends--;
         }
-        this.mbLength = (match[4].charCodeAt(0) - 96) * 250;
+        this.qbLength = (match[4].charCodeAt(0) - 96);
     }
     HarpEvent.prototype.getType = function () {
         return this.type;
@@ -175,7 +180,7 @@ var HarpEvent = (function () {
         return this.holes;
     };
     HarpEvent.prototype.getLength = function () {
-        return this.mbLength;
+        return this.qbLength;
     };
     HarpEvent.prototype.getBends = function () {
         return this.bends;
@@ -218,6 +223,62 @@ var Tune = (function () {
         return 10;
     };
     return Tune;
+}());
+var HarmonicaPlayer = (function () {
+    function HarmonicaPlayer(game, tune) {
+        this.game = game;
+        this.tune = tune;
+        this.barLastTime = 0;
+        this.qbLastTime = -1;
+        this.sounds = [null];
+        for (var n = 1; n <= PreloadState.NOTE_COUNT; n++) {
+            var snd = this.game.add.audio(n.toString());
+            this.sounds.push(snd);
+            snd.allowMultiple = true;
+        }
+    }
+    HarmonicaPlayer.prototype.destroy = function () {
+        this.stopAllSounds();
+        for (var _i = 0, _a = this.sounds; _i < _a.length; _i++) {
+            var snd = _a[_i];
+            snd.destroy();
+        }
+        this.game = this.tune = this.sounds = null;
+    };
+    HarmonicaPlayer.prototype.update = function (barPos) {
+        var bar = Math.floor(barPos);
+        var qbPos = Math.floor((barPos - bar) * this.tune.getBeats() * 4);
+        if (qbPos != this.qbLastTime || bar != this.barLastTime) {
+            if (bar >= 0 && bar < this.tune.getBarCount()) {
+                var barInfo = this.tune.getBar(bar);
+                for (var n = 0; n < barInfo.getEventCount(); n++) {
+                    var t = barInfo.getStartTime(n);
+                    var t2 = barInfo.getEndTime(n);
+                    if (t == qbPos || t2 == qbPos) {
+                        this.stopAllSounds();
+                    }
+                    if (t == qbPos) {
+                        if (!barInfo.getEvent(n).isRest()) {
+                            this.playNotes(barInfo.getEvent(n));
+                        }
+                    }
+                }
+            }
+            this.qbLastTime = qbPos;
+            this.barLastTime = bar;
+        }
+    };
+    HarmonicaPlayer.prototype.playNotes = function (event) {
+        console.log(event.getHoles());
+    };
+    HarmonicaPlayer.prototype.stopAllSounds = function () {
+        for (var ns = 1; ns <= PreloadState.NOTE_COUNT; ns++) {
+            if (this.sounds[ns].isPlaying) {
+                this.sounds[ns].stop();
+            }
+        }
+    };
+    return HarmonicaPlayer;
 }());
 window.onload = function () {
     var game = new HarmonicaTabApplication();
@@ -313,7 +374,7 @@ var BarRenderer = (function (_super) {
         var imgID = 0;
         for (var n = 0; n < this.bar.getEventCount(); n++) {
             var evt = this.bar.getEvent(n);
-            var yPos = y + height - height * this.bar.getStartTime(n) / (1000 * this.bar.getBeats());
+            var yPos = y + height - height * this.bar.getStartTime(n) / (4 * this.bar.getBeats());
             var holesUsed = evt.getHoles();
             for (var _i = 0, holesUsed_1 = holesUsed; _i < holesUsed_1.length; _i++) {
                 var hole = holesUsed_1[_i];
@@ -332,9 +393,9 @@ var BarRenderer = (function (_super) {
                 var holesUsed = evt.getHoles();
                 for (var _i = 0, holesUsed_2 = holesUsed; _i < holesUsed_2.length; _i++) {
                     var hole = holesUsed_2[_i];
-                    var img = this.game.add.image(0, 0, "sprites", "rectangle", this);
+                    var img = this.game.add.image(0, 0, "sprites", "frectangle", this);
                     img.width = this.harmonica.getHoleWidth();
-                    img.height = Math.max(1, height * evt.getLength() / (1000 * this.bar.getBeats()) - 8);
+                    img.height = Math.max(1, height * evt.getLength() / (4 * this.bar.getBeats()) - 8);
                     img.anchor.x = 0.5;
                     img.anchor.y = 1;
                     img.x = this.harmonica.getXHole(hole);

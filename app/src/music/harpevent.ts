@@ -13,7 +13,7 @@ class HarpEvent implements IHarpEvent {
     private type:Breath;
     private holes:number[];
     private noteCount:number;
-    private mbLength:number;
+    private qbLength:number;
     private bends:number;
 
     constructor(evDef:string) {
@@ -42,7 +42,7 @@ class HarpEvent implements IHarpEvent {
             if (bend == '-') this.bends--;
         }
         // Length
-        this.mbLength = (match[4].charCodeAt(0)-96) * 250;
+        this.qbLength = (match[4].charCodeAt(0)-96);
         // console.log(this.holes,this.noteCount,this.type,this.bends,this.mbLength);
 }
 
@@ -56,7 +56,7 @@ class HarpEvent implements IHarpEvent {
         return this.holes;
     }
     getLength(): number {
-        return this.mbLength;
+        return this.qbLength;
     }
     getBends(): number {
         return this.bends;
